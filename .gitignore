@@ -3,3 +3,6 @@
 /MANIFEST
 /dist
 /build
+/kodos/*BA.py
+/kodos/kodos_rc.py
+/translations/*.qm
