@@ -96,7 +96,7 @@ class Convert:
 ##################################################################################
 
 def usage():
-    print "Usage: ", sys.argv[0], " ba.pro qt.pro"
+    print("Usage: ", sys.argv[0], " ba.pro qt.pro")
     sys.exit(1)
 
 def convert():
@@ -105,7 +105,7 @@ def convert():
         outfile = sys.argv[2]
 
         if infile == outfile:
-            print "ba.pro and qt.pro must refer to different filenames\n"
+            print("ba.pro and qt.pro must refer to different filenames\n")
             usage()
     except:
         usage()

@@ -2,8 +2,8 @@
 
 import logging
 
-from PyQt4.QtGui import QIcon, QPixmap
-from PyQt4.QtCore import QSettings
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtCore import QSettings
 
 MAX_SIZE = 50 # max number of files to retain
 
@@ -17,28 +17,32 @@ class RecentFiles:
         self.load()
 
     def load(self):
-        settings = QSettings()
-        cnt = settings.beginReadArray("RecentFiles")
-        # PyQt bug: cnt is always 0, workaround with "None" test below
-        i = -1
-        while True:
-            i += 1
-            settings.setArrayIndex(i)
-            try:
-                s = settings.value("Filename").toPyObject()
-                if s == None:
-                    break
-                self.__recent_files.append(str(s))
-            except Exception, e:
-                self.log.error('Loading of recent file entry %i failed: %s' %
-                               (i, e))
-                settings.remove("Filename")
 
-        settings.endArray()
+        #TODO: Figure out QSettings later 
 
-        self.log.debug("recent_files: %s" % self.__recent_files)
+        #settings = QSettings()
+        #cnt = settings.beginReadArray("RecentFiles")
+        ## PyQt bug: cnt is always 0, workaround with "None" test below
+        #i = -1
+        #while True:
+        #    i += 1
+        #    settings.setArrayIndex(i)
+        #    try:
+        #        s = settings.value("Filename").toPyObject()
+        #        if s == None:
+        #            break
+        #        self.__recent_files.append(str(s))
+        #    except Exception as e:
+        #        self.log.error('Loading of recent file entry %i failed: %s' %
+        #                       (i, e))
+        #        settings.remove("Filename")
 
-        self.addToMenu()
+        #settings.endArray()
+
+        #self.log.debug("recent_files: %s" % self.__recent_files)
+
+        #self.addToMenu()
+        pass
 
     def save(self):
         # truncate list if necessary

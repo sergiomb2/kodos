@@ -1,27 +1,30 @@
 # -*- coding: utf-8 -*-
 #  tooltip.py: -*- Python -*-  DESCRIPTIVE TEXT.
 
-from PyQt4 import Qt, QtCore
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt, QEvent
+from PyQt5.QtWidgets import QFrame
+from PyQt5.QtGui import QPalette, QColor
 
-class Tooltip(Qt.QLabel):
+class Tooltip(QtWidgets.QLabel):
     def __init__(self, text, bgcolor="#ffd700",fgcolor="#000000",delay=1000):
         self.delay = delay
-        Qt.QLabel.__init__(self, None, QtCore.Qt.WindowStaysOnTopHint
-                        | QtCore.Qt.FramelessWindowHint
-                        | QtCore.Qt.Tool)
+        QtWidgets.QLabel.__init__(self, None, Qt.WindowStaysOnTopHint
+                        | Qt.FramelessWindowHint
+                        | Qt.Tool)
         self.setMargin(1)
         self.setIndent(0)
-        self.setFrameStyle(Qt.QFrame.Plain | Qt.QFrame.Box)
+        self.setFrameStyle(QFrame.Plain | QFrame.Box)
         self.setLineWidth(1)
         self.setText(text)
         self.adjustSize()
 
         # set the pallete...
-        pal = Qt.QPalette()
-        pal.setColor(Qt.QPalette.Active, Qt.QPalette.Window, Qt.QColor(bgcolor))
-        pal.setColor(Qt.QPalette.Active, Qt.QPalette.WindowText, Qt.QColor(fgcolor))
-        pal.setColor(Qt.QPalette.Inactive, Qt.QPalette.Window, Qt.QColor(bgcolor))
-        pal.setColor(Qt.QPalette.Inactive, Qt.QPalette.WindowText, Qt.QColor(fgcolor))
+        pal = QPalette()
+        pal.setColor(QPalette.Active, QPalette.Window, QColor(bgcolor))
+        pal.setColor(QPalette.Active, QPalette.WindowText, QColor(fgcolor))
+        pal.setColor(QPalette.Inactive, QPalette.Window, QColor(bgcolor))
+        pal.setColor(QPalette.Inactive, QPalette.WindowText, QColor(fgcolor))
         self.setPalette(pal)
 
         self.enter_timer_id = None
@@ -65,11 +68,11 @@ class Tooltip(Qt.QLabel):
 
     def eventFilter(self, obj, ev):
         type = ev.type()
-        if type == Qt.QEvent.Enter:
+        if type == QEvent.Enter:
             self.killCustomTimers()
             self.enter_timer_id = self.startTimer(self.delay)
             self.event_widget = obj
-        elif type == Qt.QEvent.Leave:
+        elif type == QEvent.Leave:
             self.killCustomTimers()
             self.leave_timer_id = self.startTimer(self.delay)
             self.event_widget = None

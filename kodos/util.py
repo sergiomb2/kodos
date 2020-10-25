@@ -6,7 +6,9 @@ import sys
 import logging
 import webbrowser
 
-from PyQt4 import Qt
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 
 log = logging.getLogger('kodos.util')
 
@@ -22,18 +24,18 @@ def getPixmap(fileStr, fileType="PNG", dir="images"):
     to the binary location and residing in it's 'images' subdirectory"""
 
     image = getAppPath() + os.sep + dir + os.sep + fileStr
-    pixmap = Qt.QPixmap(image, fileType)
+    pixmap = QPixmap(image, fileType)
     pixmap.setMask(pixmap.createHeuristicMask(1))
 
     return pixmap
 
 def kodos_toolbar_logo(toolbar):
     # hack to move logo to right
-    blanklabel = Qt.QLabel()
-    blanklabel.setSizePolicy(Qt.QSizePolicy.Expanding, Qt.QSizePolicy.Preferred)
+    blanklabel = QLabel()
+    blanklabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
 
-    logolabel = Qt.QLabel("kodos_logo")
-    logolabel.setPixmap(Qt.QPixmap(":/images/kodos_icon.png"))
+    logolabel = QLabel("kodos_logo")
+    logolabel.setPixmap(QPixmap(":/images/kodos_icon.png"))
 
     toolbar.addWidget(blanklabel)
     toolbar.addWidget(logolabel)
@@ -41,12 +43,16 @@ def kodos_toolbar_logo(toolbar):
     return logolabel
 
 def saveWindowSettings(window, filename):
-    settings = Qt.QSettings()
+    settings = QSettings()
     settings.setValue(window.objectName(), window.saveGeometry())
 
 def restoreWindowSettings(window, filename):
-    settings = Qt.QSettings()
-    window.restoreGeometry(settings.value(window.objectName()).toByteArray())
+
+    x = window.objectName()
+    settings = QSettings()
+    print(settings.value(x))
+    #TODO: Figure out why this is not working. For now ignore it.
+    #window.restoreGeometry(settings.value(window.objectName()).toByteArray())
 
 def findFile(filename):
     dirs = [getAppPath(),
@@ -63,12 +69,12 @@ def launch_browser(url, caption=None, message=None):
     if not caption: caption = "Info"
     if not message: message = "Launch web browser?"
 
-    button = Qt.QMessageBox.information(None, caption, message, Qt.QMessageBox.Ok | Qt.QMessageBox.Cancel)
-    if button == Qt.QMessageBox.Cancel:
+    button = QMessageBox.information(None, caption, message, QMessageBox.Ok | QMessageBox.Cancel)
+    if button == QMessageBox.Cancel:
         return False
     try:
         webbrowser.open(url)
-    except webbrowser.Error, e:
+    except webbrowser.Error as e:
         log.error("Couldn't open URL %r: %s" % (url, e))
         return False
     return True

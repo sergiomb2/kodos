@@ -4,12 +4,15 @@ import os
 import re
 import types
 import signal
-import cPickle
+import pickle
 import logging
 
-from PyQt4 import Qt, QtCore
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
+#from PyQt5.QtWidgets import QWidget, QInputDialog, QLineEdit
+#from PyQt5.QtWidgets import QDesktopWidget
+from PyQt5 import QtCore
+from PyQt5.QtGui import QPainter, QColor, QPen, QIcon, QPixmap
 
-from . import kodosBA
 from . import util
 from . import about
 from . import help
@@ -21,6 +24,13 @@ from . import urlDialog
 from . import regexLibrary
 from . import newUserDialogBA
 from .flags import reFlag, reFlagList
+
+from  .kodosBA import Ui_KodosBA
+#from  .version import VERSION
+#from  .recent_files import RecentFiles
+#from  .urlDialog import URLDialog
+#from  .regexLibrary import RegexLibrary
+#from  .newUserDialogBA import Ui_NewUserDialog
 
 # match status
 MATCH_NA       = 0
@@ -44,11 +54,11 @@ GEO = "kodos_geometry"
 
 # colors for normal & examination mode
 QCOLOR_WHITE  = QtCore.Qt.white         # normal
-QCOLOR_YELLOW = Qt.QColor(255,255,127)  # examine
+QCOLOR_YELLOW = QColor(255,255,127)  # examine
 
 try:
     signal.SIGALRM
-    HAS_ALARM = 1
+    HAS_ALARM = 1 
 except:
     HAS_ALARM = 0
 
@@ -59,9 +69,10 @@ except:
 #
 ##############################################################################
 
-class Kodos(kodosBA.KodosBA):
+class Kodos(QMainWindow,Ui_KodosBA):
     def __init__(self, qApp, filename):
-        kodosBA.KodosBA.__init__(self)
+        super(Kodos,self).__init__()
+        self.setupUi(self)
 
         self.log = logging.getLogger('kodos.main')
         self.qApp = qApp
@@ -90,10 +101,10 @@ class Kodos(kodosBA.KodosBA):
         self.MSG_FAIL   = self.tr("Pattern does not match")
 
 
-        self.statusPixmapsDict = {  MATCH_NA: Qt.QPixmap(":images/yellow.png"),
-                                    MATCH_OK: Qt.QPixmap(":images/green.png"),
-                                    MATCH_FAIL: Qt.QPixmap(":images/red.png"),
-                                    MATCH_PAUSED: Qt.QPixmap(":images/pause.png"),
+        self.statusPixmapsDict = {  MATCH_NA: QPixmap(":images/yellow.png"),
+                                    MATCH_OK: QPixmap(":images/green.png"),
+                                    MATCH_FAIL: QPixmap(":images/red.png"),
+                                    MATCH_PAUSED: QPixmap(":images/pause.png"),
                                 }
 
 
@@ -130,11 +141,12 @@ class Kodos(kodosBA.KodosBA):
 
 
     def checkIfNewUser(self):
-        s = Qt.QSettings()
-        if s.value('New User', "true").toPyObject() != "false":
-            self.newuserdialog = newUserDialogBA.NewUserDialog()
-            self.newuserdialog.show()
-        s.setValue('New User', "false")
+        #s = QSettings()
+        #if s.value('New User', "true").toPyObject() != "false":
+        #    self.newuserdialog = newUserDialogBA.NewUserDialog()
+        #    self.newuserdialog.show()
+        #s.setValue('New User', "false")
+        pass
 
 
     def createStatusBar(self):
@@ -247,7 +259,7 @@ class Kodos(kodosBA.KodosBA):
 
 
     def __refresh_regex_widget(self, base_qcolor, regex):
-        pal = Qt.QPalette()
+        pal = QPalette()
         pal.setColor(pal.Base, base_qcolor)
         self.regexMultiLineEdit.setPalette(pal)
 
@@ -268,12 +280,12 @@ class Kodos(kodosBA.KodosBA):
 
 
     def regex_changed_slot(self):
-        self.regex = unicode(self.regexMultiLineEdit.toPlainText())
+        self.regex = str(self.regexMultiLineEdit.toPlainText())
         self.process_regex()
 
 
     def string_changed_slot(self):
-        self.matchstring = unicode(self.stringMultiLineEdit.toPlainText())
+        self.matchstring = str(self.stringMultiLineEdit.toPlainText())
         self.process_regex()
 
     def helpContents(self, x = None):
@@ -296,7 +308,7 @@ class Kodos(kodosBA.KodosBA):
         self.replaceTextBrowser.setEnabled(True)
 
     def replace_changed_slot(self):
-        self.replace = unicode(self.replaceTextEdit.toPlainText())
+        self.replace = str(self.replaceTextEdit.toPlainText())
         self.process_regex()
         if not self.replace:
             self.hide_replace_widgets()
@@ -317,8 +329,8 @@ class Kodos(kodosBA.KodosBA):
         self.groupTable.setRowCount(rows)
         row = 0
         for t in tuples:
-            self.groupTable.setItem(row, 0, Qt.QTableWidgetItem(t[1]))
-            self.groupTable.setItem(row, 1, Qt.QTableWidgetItem(t[2]))
+            self.groupTable.setItem(row, 0, QTableWidgetItem(t[1]))
+            self.groupTable.setItem(row, 1, QTableWidgetItem(t[2]))
             row += 1
 
 
@@ -377,7 +389,7 @@ class Kodos(kodosBA.KodosBA):
     def colorize_strings(self, strings, widget, cursorOffset=0):
         widget.clear()
 
-        colors = (Qt.QBrush(Qt.QColor(QtCore.Qt.black)), Qt.QBrush(Qt.QColor(QtCore.Qt.blue)) )
+        colors = (QBrush(QColor(QtCore.Qt.black)), QBrush(QColor(QtCore.Qt.blue)) )
         cur = widget.textCursor()
         format = cur.charFormat()
 
@@ -420,7 +432,7 @@ class Kodos(kodosBA.KodosBA):
         if num == 0: num = nummatches
         text = self.matchstring
 
-        replace_text = unicode(self.replaceTextEdit.toPlainText())
+        replace_text = str(self.replaceTextEdit.toPlainText())
         if RX_BACKREF.search(replace_text):
             # if the replace string contains a backref we just use the
             # python regex methods for the substitution
@@ -521,8 +533,8 @@ class Kodos(kodosBA.KodosBA):
 
             match_obj = compile_obj.search(self.matchstring)
 
-        except Exception, e:
-            self.update_results(unicode(e), MATCH_FAIL)
+        except Exception as e:
+            self.update_results(str(e), MATCH_FAIL)
             return
 
         if HAS_ALARM:
@@ -551,7 +563,7 @@ class Kodos(kodosBA.KodosBA):
         if match_obj.groups():
             group_nums = {}
             if compile_obj.groupindex:
-                keys = compile_obj.groupindex.keys()
+                keys = list(compile_obj.groupindex.keys())
                 for key in keys:
                     group_nums[compile_obj.groupindex[key]] = key
 
@@ -562,7 +574,7 @@ class Kodos(kodosBA.KodosBA):
 
             # create group_tuple in the form: (group #, group name, group matches)
             g = allmatches[match_index]
-            if type(g) == types.TupleType:
+            if type(g) == tuple:
                 for i in range(len(g)):
                     group_tuple = (i+1, group_nums.get(i+1, ""), g[i])
                     self.group_tuples.append(group_tuple)
@@ -574,10 +586,10 @@ class Kodos(kodosBA.KodosBA):
             # clear the group table
             self.populate_group_table([])
 
-        str_pattern_matches = unicode(self.tr("Pattern matches"))
-        str_found = unicode(self.tr("found"))
-        str_match = unicode(self.tr("match"))
-        str_matches = unicode(self.tr("matches"))
+        str_pattern_matches = str(self.tr("Pattern matches"))
+        str_found = str(self.tr("found"))
+        str_match = str(self.tr("match"))
+        str_matches = str(self.tr("matches"))
 
         if len(allmatches) == 1:
             status = "%s (%s 1 %s)" % (str_pattern_matches,
@@ -661,7 +673,7 @@ class Kodos(kodosBA.KodosBA):
 
 
     def importFile(self):
-        fn = Qt.QFileDialog.getOpenFileName(self,
+        fn = QFileDialog.getOpenFileName(self,
                                          self.tr("Import File"),
                                          self.filename,
                                          self.tr("All (*)"))
@@ -691,7 +703,7 @@ class Kodos(kodosBA.KodosBA):
         filename = self.filename
         if filename == None:
             filename = ""
-        fn = Qt.QFileDialog.getOpenFileName(self,
+        fn = QFileDialog.getOpenFileName(self,
                                          self.tr("Open Kodos File"),
                                          filename,
                                          self.tr("Kodos file (*.kds);;All (*)"))
@@ -715,13 +727,13 @@ class Kodos(kodosBA.KodosBA):
             return None
 
         try:
-            u = cPickle.Unpickler(fp)
+            u = pickle.Unpickler(fp)
             self.regex = u.load()
             self.matchstring = u.load()
             flags = u.load()
-        except Exception, e: #FIXME: don't catch everything
+        except Exception as e: #FIXME: don't catch everything
             self.log.error('Error unpickling data from file: %s' % e)
-            msg = "%s %s" % (unicode(self.tr("Error reading from file:")),
+            msg = "%s %s" % (str(self.tr("Error reading from file:")),
                              filename)
             self.updateStatus(msg, -1, 5, True)
             return 0
@@ -742,7 +754,7 @@ class Kodos(kodosBA.KodosBA):
         self.replaceTextEdit.setPlainText(replace)
 
         self.filename = filename
-        msg = "%s %s" % (filename, unicode(self.tr("loaded successfully")))
+        msg = "%s %s" % (filename, str(self.tr("loaded successfully")))
         self.updateStatus(msg, -1, 5, True)
         self.editstate = STATE_UNEDITED
         return 1
@@ -752,19 +764,19 @@ class Kodos(kodosBA.KodosBA):
         filename = self.filename
         if filename == None:
             filename = ""
-        filedialog = Qt.QFileDialog(self,
+        filedialog = QFileDialog(self,
                                  self.tr("Save Kodos File"),
                                  filename,
                                  "Kodos file (*.kds);;All (*)")
-        filedialog.setAcceptMode(Qt.QFileDialog.AcceptSave)
+        filedialog.setAcceptMode(QFileDialog.AcceptSave)
         filedialog.setDefaultSuffix("kds")
         ok = filedialog.exec_()
 
-        if ok == Qt.QDialog.Rejected:
+        if ok == QDialog.Rejected:
             self.updateStatus(self.tr("No file selected to save"), -1, 5, True)
             return
 
-        filename = os.path.normcase(unicode(filedialog.selectedFiles().first()))
+        filename = os.path.normcase(str(filedialog.selectedFiles().first()))
 
         self.filename = filename
         self.fileSave()
@@ -778,21 +790,21 @@ class Kodos(kodosBA.KodosBA):
         try:
             fp = open(self.filename, "w")
         except:
-            msg = "%s: %s" % (unicode(self.tr("Could not open file for writing:")),
+            msg = "%s: %s" % (str(self.tr("Could not open file for writing:")),
                               self.filename)
             self.updateStatus(msg, -1, 5, True)
             return None
 
         self.editstate = STATE_UNEDITED
-        p = cPickle.Pickler(fp)
+        p = pickle.Pickler(fp)
         p.dump(self.regex)
         p.dump(self.matchstring)
         p.dump(self.reFlags.allFlagsORed())
         p.dump(self.replace)
 
         fp.close()
-        msg = "%s %s" % (unicode(self.filename),
-                         unicode(self.tr("successfully saved")))
+        msg = "%s %s" % (str(self.filename),
+                         str(self.tr("successfully saved")))
         self.updateStatus(msg, -1, 5, True)
         self.recent_files.add(self.filename)
 
@@ -823,17 +835,17 @@ class Kodos(kodosBA.KodosBA):
         if self.editstate == STATE_EDITED:
             message = self.tr("You have made changes. Would you like to save them before continuing?")
 
-            prompt = Qt.QMessageBox.warning(None,
+            prompt = QMessageBox.warning(None,
                                          self.tr("Save changes?"),
                                          message,
-                                         Qt.QMessageBox.Save |
-                                         Qt.QMessageBox.Cancel |
-                                         Qt.QMessageBox.Discard)
+                                         QMessageBox.Save |
+                                         QMessageBox.Cancel |
+                                         QMessageBox.Discard)
 
-            if prompt == Qt.QMessageBox.Cancel:
+            if prompt == QMessageBox.Cancel:
                 return False
 
-            if prompt == Qt.QMessageBox.Save:
+            if prompt == QMessageBox.Save:
                 self.fileSave()
                 if not self.filename: self.checkEditState()
 
@@ -982,3 +994,5 @@ class Kodos(kodosBA.KodosBA):
     def report_bug(self):
         self.launch_browser_wrapper('https://github.com/luksan/kodos/issues',
                                     message=self.tr("Launch web browser to report a bug in kodos?"))
+
+

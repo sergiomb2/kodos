@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
-
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QMessageBox
-from . import urlDialogBA
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QMessageBox
+from . urlDialogBA import Ui_URLDialogBA
 from . import help
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
-
-class URLDialog(urlDialogBA.URLDialogBA):
+class URLDialog(Ui_URLDialogBA):
 
     urlImported = pyqtSignal(str, str)
 
     def __init__(self, parent, url=None):
-        urlDialogBA.URLDialogBA.__init__(self, parent)
+        Ui_URLDialogBA.__init__(self, parent)
         if url:
             self.URLTextEdit.setPlainText(url)
 
@@ -24,9 +22,9 @@ class URLDialog(urlDialogBA.URLDialogBA):
     def ok_slot(self):
         url = str(self.URLTextEdit.toPlainText())
         try:
-            fp = urllib.urlopen(url)
+            fp = urllib.request.urlopen(url)
             lines = fp.readlines()
-        except Exception, e:
+        except Exception as e:
             QMessageBox.information(None, "Failed to open URL",
                                     "Could not open the specified URL.  Please check to ensure that you have entered the correct URL.\n\n%s" % str(e))
             return

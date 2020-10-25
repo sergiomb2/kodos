@@ -8,8 +8,8 @@ import logging
 import optparse
 
 try:
-    from PyQt4 import QtGui
-    from PyQt4 import QtCore
+    from PyQt5.QtWidgets import QApplication
+    from PyQt5 import QtCore
 except:
     sys.exit("""Could not locate the PyQt module.  Please make sure that
 you have installed PyQt for the version of Python that you are running.""")
@@ -39,7 +39,7 @@ log = logging.getLogger('kodos')
 
 os.environ['KODOS_DIR'] = options.kodos_dir
 
-qApp = QtGui.QApplication(sys.argv)
+qApp = QApplication(sys.argv)
 qApp.setOrganizationName("kodos")
 qApp.setApplicationName("kodos")
 qApp.setOrganizationDomain("kodos.sourceforge.net")

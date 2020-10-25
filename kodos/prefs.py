@@ -3,19 +3,24 @@
 
 import logging
 
-from PyQt4.QtCore import pyqtSignal, QSettings
-from PyQt4.QtGui import QDialog, QFontDialog
-from . import prefsBA
+from PyQt5.QtCore import pyqtSignal, QSettings
+from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QFontDialog
+
+from . prefsBA import Ui_PrefsBA
 from . import help
+from . windowutils import WindowUtils
 
-class Preferences(prefsBA.PrefsBA):
-
+class Preferences(WindowUtils,QDialog, Ui_PrefsBA):
     prefsSaved = pyqtSignal()
 
     def __init__(self, parent, autoload=0):
+        super(Preferences,self).__init__()
         self.log = logging.getLogger('kodos.prefs')
         self.parent = parent
-        prefsBA.PrefsBA.__init__(self, parent)
+        self.setupUi(self)
+
+        #PrefsBA.__init__(self, parent)
 
         self.settings = QSettings()
 
@@ -32,7 +37,7 @@ class Preferences(prefsBA.PrefsBA):
                     self.parent.setMatchFont(setting.toPyObject())
                 if preference == 'Recent Files Count':
                     self.recentFilesSpinBox.setValue(int(setting.toPyObject()))
-            except Exception, e:
+            except Exception as e:
                 self.log.error('Loading of configuration key %s failed: %s' %
                                (preference, e))
                 self.settings.remove(preference)
