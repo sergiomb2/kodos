@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from modules.version import VERSION
-from distutils.core import setup
+#from distutils.core import setup
 from distutils.command.install import install as DistutilsInstall
+from setuptools import setup, find_packages
 #from distutils.sysconfig import get_python_lib
 import os
 import os.path
@@ -10,6 +11,7 @@ import sys
 from glob import glob
 
 args = sys.argv[1:]
+os.system('make')
 
 if sys.platform == 'win32':
 #     libpath = '.\\'
@@ -30,11 +32,6 @@ SCREENSHOTS_DIR = os.path.join(libpath, "screenshots")
 MODULES_DIR = os.path.join(libpath, "modules")
 TRANSLATIONS_DIR = os.path.join(libpath, "translations")
 
-class MyInstall(DistutilsInstall):
-  def run(self):
-    os.system('make')
-    DistutilsInstall.run(self)
-
 #########################################################################
 
 setup(name="kodos",
@@ -43,9 +40,15 @@ setup(name="kodos",
       author="Phil Schwartz",
       author_email="phil_schwartz@users.sourceforge.net",
       url="http://kodos.sourceforge.net",
-      scripts=['kodos'],
-      ##package_dir={'': 'modules'},
-      packages=['modules', "."],
+          entry_points={
+        'console_scripts': [
+            'subdownloader = subdownloader.client.__main__:main'
+        ],
+      },
+      scripts=['kodos.py'],
+      #package_dir={'': 'modules'},
+      packages=find_packages(),
+      #packages=['modules', "."],
       data_files=[(HELP_DIR, glob(os.path.join("help", "*.*ml"))),
                   (HELP_PY_DIR, glob(os.path.join("help", "python", "*.html"))),
                   (IMAGES_DIR, glob(os.path.join("images", "*.png"))),
@@ -54,10 +57,8 @@ setup(name="kodos",
                   (MODULES_DIR, glob("modules/*.ui"))
                   ],
       license="GPL",
-      extra_path='kodos',
       long_description="""
       Kodos is a visual regular expression editor and debugger.
       """,
-      cmdclass={'install':MyInstall},
       )
 

@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 #  reportBug.py: -*- Python -*-  DESCRIPTIVE TEXT.
 
-from reportBugBA import reportBugBA
+from reportBugBA import Ui_reportBugBA
 from util import *
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
-from PyQt4 import *
+#from PyQt5.QtGui import *
+#from PyQt5.QtCore import *
+#from PyQt5 import *
+from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QWidget
 import sys
 import string
 import smtplib
@@ -13,9 +15,13 @@ from version import VERSION
 
 AUTHOR_ADDR = "phil_schwartz@users.sourceforge.net"
 
-class reportBug(reportBugBA):
+class reportBug(QWidget, Ui_reportBugBA):
     def __init__(self, parent=None, name=None):
-        reportBugBA.__init__(self, parent)
+        #reportBugBA.__init__(self, parent)
+        
+        super(reportBug,self).__init__()
+        self.setupUi(self)
+        
         self.parent = parent
         self.kodos_main = parent.kodos_main
         self.populate()
@@ -23,7 +29,7 @@ class reportBug(reportBugBA):
 
     def populate(self):
         self.OSEdit.setText(sys.platform)
-        pyvers = string.replace(sys.version, "\n", " - ")
+        pyvers = sys.version.replace("\n", " - ")
         self.pythonVersionEdit.setText(pyvers)
         self.PyQtVersionEdit.setText(QT_VERSION_STR)
         self.regexMultiLineEdit.setPlainText(self.kodos_main.regexMultiLineEdit.toPlainText())
@@ -48,16 +54,16 @@ class reportBug(reportBugBA):
 
         msg = "Subject: Kodos bug report\n\n"
         msg += "Kodos Version: %s\n" % VERSION
-        msg += "Operating System: %s\n" % unicode(self.OSEdit.text())
-        msg += "Python Version: %s\n" % unicode(self.pythonVersionEdit.text())
-        msg += "PyQt Version: %s\n" % unicode(self.PyQtVersionEdit.text())
+        msg += "Operating System: %s\n" % str(self.OSEdit.text())
+        msg += "Python Version: %s\n" % str(self.pythonVersionEdit.text())
+        msg += "PyQt Version: %s\n" % str(self.PyQtVersionEdit.text())
         msg += "\n" + "=" * 70 + "\n"
-        msg += "Regex:\n%s\n" % unicode(self.regexMultiLineEdit.text())
+        msg += "Regex:\n%s\n" % str(self.regexMultiLineEdit.text())
         msg += "=" * 70 + "\n"
-        msg += "String:\n%s\n" % unicode(self.stringMultiLineEdit.text())
+        msg += "String:\n%s\n" % str(self.stringMultiLineEdit.text())
         msg += "=" * 70 + "\n"
-        msg += "Comments:\n%s\n" % unicode(self.commentsMultiLineEdit.text())
-        email_server = unicode(self.kodos_main.prefs.emailServerEdit.text()) or "localhost"
+        msg += "Comments:\n%s\n" % str(self.commentsMultiLineEdit.text())
+        email_server = str(self.kodos_main.prefs.emailServerEdit.text()) or "localhost"
         try:
             server = smtplib.SMTP(email_server)
             server.sendmail(addr, AUTHOR_ADDR, msg)
@@ -66,7 +72,7 @@ class reportBug(reportBugBA):
                                     self.tr("Bug report sent"),
                                     self.tr("Your bug report has been sent."))
             self.parent.close()
-        except Exception, e:
+        except Exception as e:
             QMessageBox.information(None,
                                     self.tr("An exception occurred sending bug report"),
                                     str(e))
@@ -94,7 +100,9 @@ class reportBugWindow(QMainWindow):
     def createMenu(self):
         self.menubar = self.menuBar()
         self.filemenu = self.menubar.addMenu(self.tr("&File"))
-        self.filemenu.addAction(self.tr("&Close"), self, SLOT("close()"))
+        
+        closeAction = QAction(self.tr("close"),self)
+        self.filemenu.addAction(closeAction)
 
 
     def createToolBar(self):

@@ -1,18 +1,26 @@
 # -*- coding: utf-8 -*-
 #  prefs.py: -*- Python -*-  DESCRIPTIVE TEXT.
 
-from PyQt4.QtCore import pyqtSignal, QSettings
-from PyQt4.QtGui import QDialog, QFontDialog
-from prefsBA import PrefsBA
-import help
+from PyQt5.QtCore import pyqtSignal, QSettings
+from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QFontDialog
 
-class Preferences(PrefsBA):
+
+from prefsBA import Ui_PrefsBA
+import help
+from windowutils import WindowUtils
+
+
+class Preferences(WindowUtils,QDialog, Ui_PrefsBA):
 
     prefsSaved = pyqtSignal()
 
     def __init__(self, parent, autoload=0):
+        super(Preferences,self).__init__()
         self.parent = parent
-        PrefsBA.__init__(self, parent)
+        self.setupUi(self)
+
+        #PrefsBA.__init__(self, parent)
 
         self.settings = QSettings()
 
@@ -31,8 +39,8 @@ class Preferences(PrefsBA):
                     self.emailServerEdit.setText(setting.toPyObject())
                 if preference == 'Recent Files Count':
                     self.recentFilesSpinBox.setValue(int(setting.toPyObject()))
-            except Exception, e:
-                print "Loading of configuration key", preference, "failed."
+            except Exception as e:
+                print("Loading of configuration key", preference, "failed.")
                 self.settings.remove(preference)
 
 

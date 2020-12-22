@@ -1,14 +1,22 @@
 # -*- coding: utf-8 -*-
 #  tooltip.py: -*- Python -*-  DESCRIPTIVE TEXT.
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+#from PyQt5.QtGui import *
+#from PyQt5.QtCore import *
+#from PyQt5 import QtWidgets
+
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QFrame
+from PyQt5.QtGui import QPalette
 from util import *
 
-class Tooltip(QLabel):
+
+
+class Tooltip(QtWidgets.QLabel):
     def __init__(self, text, bgcolor="#ffd700",fgcolor="#000000",delay=1000):
         self.delay = delay
-        QLabel.__init__(self, None, Qt.WindowStaysOnTopHint
+        QtWidgets.QLabel.__init__(self, None, Qt.WindowStaysOnTopHint
                         | Qt.FramelessWindowHint
                         | Qt.Tool)
         self.setMargin(1)

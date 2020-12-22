@@ -3,8 +3,9 @@
 
 from tooltip import Tooltip
 from util import TRUE, FALSE
-from PyQt4.QtCore import QTimer
-from PyQt4.QtGui import QPixmap, QLabel, QProgressBar
+from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import QLabel, QProgressBar
+from PyQt5.QtGui import QPixmap
 
 class Status_Bar:
     def __init__(self, parent, progress_bar=FALSE, message=''):
@@ -46,7 +47,7 @@ class Status_Bar:
         """
 
         self.__statusTimer.stop()
-        self.last_status_message = unicode(self.__statusLabel.text())
+        self.last_status_message = str(self.__statusLabel.text())
         self.replace_status_message = replace
 
         self.__statusLabel.setText(message)

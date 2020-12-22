@@ -1,20 +1,23 @@
 # -*- coding: utf-8 -*-
 #  reference.py: -*- Python -*-  DESCRIPTIVE TEXT.
 
-from PyQt4.QtCore import pyqtSignal
-from referenceBA import ReferenceBA
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QMainWindow
+from referenceBA import Ui_ReferenceBA
 from util import kodos_toolbar_logo, restoreWindowSettings, saveWindowSettings
-
+from windowutils import WindowUtils
 GEO = "regex-ref_geometry"
 
-class Reference(ReferenceBA):
+class Reference(WindowUtils, QMainWindow, Ui_ReferenceBA):
 
     pasteSymbol = pyqtSignal(str)
 
     def __init__(self, parent):
-        ReferenceBA.__init__(self, None)
+       
+        super(Reference,self).__init__()
         self.parent = parent
-
+        self.setupUi(self)
+        
         restoreWindowSettings(self, GEO)
         kodos_toolbar_logo(self.toolBar)
 

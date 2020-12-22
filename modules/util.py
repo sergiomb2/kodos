@@ -7,9 +7,9 @@ import sys
 from debug import *
 import webbrowser
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
-
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 # QT constants that should be defined
 FALSE = 0
 TRUE = 1
@@ -29,7 +29,7 @@ def getPixmap(fileStr, fileType="PNG", dir="images"):
 
     image = getAppPath() + os.sep + dir + os.sep + fileStr
 
-    if debug & DEBUG_PIXMAP: print "image:", image
+    if debug & DEBUG_PIXMAP: print("image:", image)
 
     pixmap = QPixmap(image, fileType)
     pixmap.setMask(pixmap.createHeuristicMask(1))
@@ -54,8 +54,13 @@ def saveWindowSettings(window, filename):
     settings.setValue(window.objectName(), window.saveGeometry())
 
 def restoreWindowSettings(window, filename):
+    
+    x = window.objectName()
     settings = QSettings()
-    window.restoreGeometry(settings.value(window.objectName()).toByteArray())
+    print(settings.value(x))
+    
+    #TODO: Figure out why this is not working. For now ignore it.
+    #window.restoreGeometry(settings.value(x).toByteArray())
 
 def findFile(filename):
     dirs = [getAppPath(),
@@ -77,9 +82,9 @@ def launch_browser(url, caption=None, message=None):
         return False
     try:
         webbrowser.open(url)
-    except webbrowser.Error, e:
+    except webbrowser.Error as e:
         if debug:
-            print e
-        print "Couldn't open URL:", url
+            print(e)
+        print("Couldn't open URL:", url)
         return False
     return True
